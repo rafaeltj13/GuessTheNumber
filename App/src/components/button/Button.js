@@ -37,7 +37,8 @@ const CustomButton = ({ onClick, label, variant, icon, ...props }) => {
     return (
         <View style={styles.buttonContainer}>
             <TouchableOpacity
-                style={selectedStyle.button}
+                {...props}
+                style={[props.style, selectedStyle.button]}
                 onPress={onClick && (() => onClick())}
             >
                 {label && <Text style={selectedStyle.text}>{label}</Text>}

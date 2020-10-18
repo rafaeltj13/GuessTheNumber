@@ -12,4 +12,4 @@ export const defaultStyles = {
     heightPercentage: hp
 }
 
-export const apiUrl = '';
+export const serverIP = `192.168.25.52`;

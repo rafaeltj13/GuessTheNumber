@@ -6,7 +6,7 @@ import Button from '../../../components/button/Button';
 import { defaultStyles } from '../../../utils/constants';
 import { addAttemptRequest, setTimerRequest } from '../actions';
 
-const Attempt = ({ navigation, actualAttempt, addAttempt, guess, setTimer, endTime, ...props }) => {
+const Attempt = ({ navigation, actualAttempt, addAttempt, guess, setTimer, endTime, cleanForm, ...props }) => {
 
     const [correctGuess, setCorrectGuess] = useState(null);
     const [feedBackUser, setFeedBackUser] = useState(false);
@@ -26,11 +26,8 @@ const Attempt = ({ navigation, actualAttempt, addAttempt, guess, setTimer, endTi
 
     const handleSuccess = () => {
         setTimer('endTime');
+        cleanForm();
     };
-
-    useEffect(() => {
-        endTime > 0 && navigation.navigate('Game', { screen: 'Resume' });
-    }, [endTime])
 
     return (
         <View style={styles.attemptContainer}>

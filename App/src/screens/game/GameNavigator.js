@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 import { defaultStyles } from '../../utils/constants'
 import ClueScreen from './clue/ClueScreen';
 import ResumeScreen from './resume/ResumeScreen';
-import BackButton from '../../components/backButton/BackButton';
 
 const GameStack = createStackNavigator();
 
@@ -14,23 +13,22 @@ const GameNavigator = () => {
             screenOptions={{
                 headerStyle: styles.header,
                 headerTitleStyle: styles.title,
+                headerLeft: null,
             }}>
             <GameStack.Screen
                 name="Clue"
                 component={ClueScreen}
-                options={({ navigation, route }) => ({
-                    headerLeft: (props) => <BackButton navigation={navigation} {...props} />,
-                    headerRight: (props) => <React.Fragment />,
-                    title: 'Pistas Iniciais '
-                })} />
+                options={{
+                    headerLeft: null,
+                    title: 'Pistas'
+                }} />
             <GameStack.Screen
                 name="Resume"
                 component={ResumeScreen}
-                options={({ navigation, route }) => ({
-                    headerLeft: (props) => <BackButton navigation={navigation} {...props} />,
-                    headerRight: (props) => <React.Fragment />,
+                options={{
+                    headerLeft: null,
                     title: 'Resumo'
-                })} />
+                }} />
         </GameStack.Navigator>
     );
 };

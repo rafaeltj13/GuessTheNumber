@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from '../utils/constants';
+import { serverIP } from '../utils/constants';
 
-const url = `${apiUrl}/`
+const url = `http://${serverIP}:1337/api/`
 
 const Api = axios.create({
     baseURL: `${url}`,

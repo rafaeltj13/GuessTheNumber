@@ -1,28 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultStyles } from '../../../utils/constants';
-import TextField from '../../../components/textField/TextField';
 import Button from '../../../components/button/Button';
+import { createScoreRequest } from '../actions';
 
-const ResumeScreen = ({ navigation, startTime, endTime, guess, attempts }) => {
-    const [form, setFormValue] = useState({
-        name: '',
-    });
+const ResumeScreen = ({ navigation, startTime, endTime, guess, attempts, name, createScore, loading, error }) => {
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = () => {
+        createScore({
+            name,
+            guess,
+            attempts,
+            time: Math.floor((endTime - startTime) / 1000)
+        });
+        setSubmitted(true)
+    };
+
+    useEffect(
+        () => {
+            if (submitted && !loading) {
+                if (error) {
+                    setSubmitted(false);
+                    navigation.replace('Home')
+                } else {
+                    navigation.replace('Ranking')
+                }
+            }
+        },
+        [loading, error]
+    );
 
     return (
         <View style={styles.homeContainer}>
             <View style={styles.content}>
-                <Text style={styles.title}>Consegui! O número escolhido foi: {guess}</Text>
+                <Text style={styles.title}>Consegui! O número escolhido por {name} era {guess}</Text>
                 <Text style={styles.time}>Tentativas: {attempts}</Text>
                 <Text style={styles.time}>Tempo decorrido: {Math.floor((endTime - startTime) / 1000)} segundo(s)</Text>
-                <TextField
-                    name="name"
-                    setFieldValue={(name, text) => setFormValue({ ...form, [name]: text })}
-                    placeholder="Digite o seu nome"
-                />
-                <Button label="Registrar pontuação" variant="outlined" onClick={() => console.log(form)} />
+                <Button label="Registrar pontuação" variant="outlined" onClick={() => handleSubmit()} />
             </View>
         </View>
     )
@@ -55,10 +72,12 @@ const mapStateToProps = ({ game }) => ({
     startTime: game.startTime,
     endTime: game.endTime,
     guess: game.guess,
-    attempts: game.attempts
+    attempts: game.attempts,
+    name: game.name
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    createScore: scoreBody => dispatch(createScoreRequest(scoreBody))
 });
 
 export default connect(

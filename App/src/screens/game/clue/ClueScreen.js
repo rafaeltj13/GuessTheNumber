@@ -8,7 +8,7 @@ import { defaultStyles } from '../../../utils/constants';
 import { addGuessRequest, setTimerRequest } from '../actions';
 import Attempt from '../attempt/Attempt';
 
-const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
+const ClueScreen = ({ navigation, attempts, addGuess, setTimer, endTime, ...props }) => {
     const [guessStep, setGuessStep] = useState(1);
     const [showAttempt, setShowAttempt] = useState(false);
     const [form, setFormValue] = useState({
@@ -22,8 +22,18 @@ const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
         setShowAttempt(true);
     };
 
+    const cleanForm = () => {
+        setGuessStep(1);
+        setFormValue(prevForm => ({
+            ...prevForm,
+            "1": '',
+            "2": '',
+            "3": ''
+        }));
+    };
+
     useEffect(() => {
-        if (attempts > 0) {
+        if (attempts > 1) {
             setTimeout(() => {
                 setGuessStep(guessStep + 1);
                 setShowAttempt(false);
@@ -33,12 +43,16 @@ const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
 
     useEffect(() => {
         setTimer('startTime')
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        endTime > 0 && navigation.replace('Game', { screen: 'Resume' });
+    }, [endTime]);
 
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                {(showAttempt || (guessStep > 3)) && <Attempt navigation={navigation}/>}
+                {(showAttempt || (guessStep > 3)) && <Attempt navigation={navigation} cleanForm={cleanForm} />}
                 {!showAttempt && guessStep === 1 &&
                     <View>
                         <Text style={styles.title}>Essa vai ser a minha primeira tentativa...</Text>
@@ -46,6 +60,7 @@ const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
                         <Text style={styles.tip}>Lembrando que o número tem que ser primo!</Text>
                         <TextField
                             name="1"
+                            form={form}
                             setFieldValue={(name, text) => setFormValue({ ...form, [name]: text })}
                             keyboardType="number-pad"
                             placeholder="Digite um numero"
@@ -60,6 +75,7 @@ const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
                         <Text style={styles.tip}>Talvez com esse valor eu adivinhe o numero que voce pensou</Text>
                         <TextField
                             name="2"
+                            form={form}
                             setFieldValue={(name, text) => setFormValue({ ...form, [name]: text })}
                             keyboardType="number-pad"
                             placeholder="Digite um numero"
@@ -74,6 +90,7 @@ const ClueScreen = ({ navigation, attempts, addGuess, setTimer, ...props }) => {
                         <Text style={styles.tip}>Pode desconsiderar o numero 0</Text>
                         <TextField
                             name="3"
+                            form={form}
                             setFieldValue={(name, text) => setFormValue({ ...form, [name]: text })}
                             keyboardType="number-pad"
                             placeholder="Digite um numero"
@@ -126,7 +143,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = ({ game }) => ({
     loading: game.loading,
     error: game.error,
-    attempts: game.attempts
+    attempts: game.attempts,
+    endTime: game.endTime
 });
 
 const mapDispatchToProps = (dispatch) => ({
